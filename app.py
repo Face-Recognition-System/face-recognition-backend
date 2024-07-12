@@ -67,9 +67,12 @@ async def recognize(file: UploadFile = File(...)):
         if face_vector is None:
             raise HTTPException(status_code=400, detail="No face detected in the image")
 
+        # Adjust the threshold for face recognition
         D, I = index.search(np.array([face_vector]), 1)
+        
+        threshold = 1.0  # Adjusted threshold value for better recognition tolerance
 
-        if D[0][0] < 0.6:  # threshold for face recognition
+        if D[0][0] < threshold:
             student = collection.find_one({'face_vector': face_vector.tolist()})
             if student:
                 student['_id'] = str(student['_id'])
